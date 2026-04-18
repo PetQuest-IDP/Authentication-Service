@@ -6,8 +6,7 @@ import org.acs.idp.authenticationservice.model.request.AuthRequest;
 import org.acs.idp.authenticationservice.model.request.SaveUserRequest;
 import org.acs.idp.authenticationservice.model.response.AuthResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,12 +17,9 @@ public class AuthService {
     @Value("${jwt.refresh-token-expiry}")
     private long refreshTokenExpiry;
 
-    private final PasswordEncoder passwordEncoder;
-
     public AuthService(DbClientService dbClient, JwtService jwtService) {
         this.dbClient = dbClient;
         this.jwtService = jwtService;
-        passwordEncoder = new BCryptPasswordEncoder();
     }
 
     //  Register
@@ -35,7 +31,7 @@ public class AuthService {
         }
 
         //  Hash the password and save the user
-        String hashed = passwordEncoder.encode(request.password());
+        String hashed = BCrypt.withDefaults().hashToString(12, request.password().toCharArray());
         dbClient.saveUser(new SaveUserRequest(request.email(), hashed));
     }
 
@@ -47,8 +43,12 @@ public class AuthService {
             throw new RuntimeException("User not found");
         }
 
-        // Check the password against the stored hash
-        if (!passwordEncoder.matches(request.password(), user.passwordHash())) {
+        //  Check the password against the stored hash
+        boolean matches = BCrypt.verifyer().verify(
+                request.password().toCharArray(),
+                user.passwordHash()).verified;
+
+        if (!matches) {
             throw new RuntimeException("Wrong password");
         }
 
