@@ -31,7 +31,8 @@ public class AuthService {
         }
 
         //  Hash the password and save the user
-        String hashed = BCrypt.withDefaults().hashToString(12, request.password().toCharArray());
+        String hashed = BCrypt.withDefaults()
+                .hashToString(12, request.password().toCharArray());
         dbClient.saveUser(new SaveUserRequest(request.email(), hashed));
     }
 
