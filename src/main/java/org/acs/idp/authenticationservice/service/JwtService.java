@@ -21,6 +21,7 @@ public class JwtService {
     //  Creates a short-lived access token
     public String generateAccessToken(String email) {
         return Jwts.builder()
+                .setIssuer("auth-service")
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiry))
