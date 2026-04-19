@@ -21,10 +21,14 @@ public class DbClientService {
 
     //  User calls
     public UserDto findUserByEmail(String email) {
-        return restClient.get()
-                .uri("/users?email={email}", email)
-                .retrieve()
-                .body(UserDto.class);
+        try {
+            return restClient.get()
+                    .uri("/users?email={email}", email)
+                    .retrieve()
+                    .body(UserDto.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void saveUser(SaveUserRequest request) {
