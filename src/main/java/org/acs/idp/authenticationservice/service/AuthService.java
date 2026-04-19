@@ -53,6 +53,9 @@ public class AuthService {
             throw new RuntimeException("Wrong password");
         }
 
+        //  Delete any other refresh token associated with the current account
+        dbClient.deleteAllRefreshTokensByEmail(user.email());
+
         return issueTokens(user.email());
     }
 

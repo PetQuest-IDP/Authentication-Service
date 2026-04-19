@@ -61,4 +61,11 @@ public class DbClientService {
                 .retrieve()
                 .toBodilessEntity();
     }
+
+    public void deleteAllRefreshTokensByEmail(String email) {
+        restClient.delete()
+                .uri("/refresh-tokens/all?email={email}", email)
+                .retrieve()
+                .toBodilessEntity();
+    }
 }
