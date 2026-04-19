@@ -64,14 +64,19 @@ public class AuthService {
         //  Look up the refresh token in DB
         RefreshTokenDto stored = dbClient.findRefreshToken(refreshToken);
 
+        if (stored == null) {
+            throw new RuntimeException("Refresh token not found");
+        }
+
         //  Check it hasn't expired
         if (System.currentTimeMillis() > stored.expiresAt()) {
-            dbClient.deleteRefreshToken(refreshToken); // clean up expired token
+            dbClient.deleteRefreshToken(refreshToken);
             throw new RuntimeException("Refresh token expired, please log in again");
         }
 
         //  Delete the old refresh token and issue a new pair
         dbClient.deleteRefreshToken(refreshToken);
+
         return issueTokens(stored.email());
     }
 

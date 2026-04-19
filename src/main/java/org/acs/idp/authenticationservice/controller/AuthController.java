@@ -1,6 +1,8 @@
 package org.acs.idp.authenticationservice.controller;
 
 import org.acs.idp.authenticationservice.model.request.AuthRequest;
+import org.acs.idp.authenticationservice.model.request.LogoutRequest;
+import org.acs.idp.authenticationservice.model.request.RefreshRequest;
 import org.acs.idp.authenticationservice.model.response.AuthResponse;
 import org.acs.idp.authenticationservice.service.AuthService;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +30,13 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refresh(@RequestBody String refreshToken) {
-        return ResponseEntity.ok(authService.refresh(refreshToken));
+    public ResponseEntity<AuthResponse> refresh(@RequestBody RefreshRequest refreshRequest) {
+        return ResponseEntity.ok(authService.refresh(refreshRequest.refreshToken()));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestBody String refreshToken) {
-        authService.logout(refreshToken);
+    public ResponseEntity<String> logout(@RequestBody LogoutRequest logoutRequest) {
+        authService.logout(logoutRequest.refreshToken());
         return ResponseEntity.ok("Logged out");
     }
 }

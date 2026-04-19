@@ -49,10 +49,14 @@ public class DbClientService {
     }
 
     public RefreshTokenDto findRefreshToken(String token) {
-        return restClient.get()
-                .uri("/refresh-tokens?token={token}", token)
-                .retrieve()
-                .body(RefreshTokenDto.class);
+        try {
+            return restClient.get()
+                    .uri("/refresh-tokens?token={token}", token)
+                    .retrieve()
+                    .body(RefreshTokenDto.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void deleteRefreshToken(String token) {
