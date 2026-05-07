@@ -2,6 +2,7 @@ package org.acs.idp.authenticationservice.service;
 
 import org.acs.idp.authenticationservice.model.dto.RefreshTokenDto;
 import org.acs.idp.authenticationservice.model.dto.UserDto;
+import org.acs.idp.authenticationservice.model.exception.TokenNotFoundException;
 import org.acs.idp.authenticationservice.model.request.SaveRefreshTokenRequest;
 import org.acs.idp.authenticationservice.model.request.SaveUserRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,6 +64,10 @@ public class DbClientService {
         restClient.delete()
                 .uri("/refresh-tokens?token={token}", token)
                 .retrieve()
+                .onStatus(status -> status.value() == 404, (req, res) -> {
+                    //  DB says 404
+                    throw new TokenNotFoundException();
+                })
                 .toBodilessEntity();
     }
 
